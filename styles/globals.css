@@ -20,6 +20,7 @@
   /* CUSTOMIZE THE COLOR  PALLETTE */
   --onboard-white: white;
   --onboard-black: black;
+  --onboard-dark: #727272;
   --onboard-primary-1: #2f80ed;
   --onboard-primary-100: #eff1fc;
   --onboard-primary-200: #d0d4f7;
@@ -61,10 +62,27 @@
 html {
   scroll-behavior: smooth;
   font-family: var(--font-family);
-  background: var(--clr-background);
+  background: #f5f5f5;
 }
 
-::selection {
+/* ::selection {
   background: var(--clr-selection-bg);
   color: var(--clr-selection-text);
+} */
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
+
+input[type=number] {
+  -moz-appearance: textfield;
+  outline: none;
+}
+
+select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #000;
+}
+

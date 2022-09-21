@@ -95,7 +95,7 @@ export const presaleMint = async (mintAmount) => {
         <a href={`https://rinkeby.etherscan.io/tx/${txHash}`} target="_blank">
           <p>✅ Check out your transaction on Etherscan:</p>
           <p>{`https://rinkeby.etherscan.io/tx/${txHash}`}</p>
-        </a>
+        </a>  
       )
     }
   } catch (error) {
