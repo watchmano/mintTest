@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { initOnboard } from '../utils/onboard'
 import { useConnectWallet, useSetChain, useWallets } from '@web3-onboard/react'
 import { config } from '../dapp.config'
+import createGuest from 'cross-domain-storage/guest'
 import {
   getTotalMinted,
   getMaxSupply,
@@ -11,6 +12,7 @@ import {
   presaleMint,
   publicMint
 } from '../utils/interact'
+import {axios} from 'axios'
 
 export default function Mint() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
@@ -31,10 +33,18 @@ export default function Mint() {
 
   const [nftPrice, setNftPrice] = useState(0)
   const [currency, setCurrency] = useState('eth')
+  const [walletAddress, setWalletAddress] = useState('')
+
 
   useEffect(() => {
-    setOnboard(initOnboard)
-  }, [])
+    var bazStorage = createGuest('https://360hexaworld.com');
+    bazStorage.get('logininfo', function(error, value) {
+      console.log(value)
+      // value for the key of 'fizz' will be retrieved from localStorage on www.baz.com
+  });
+    // const { address } = walletAddress
+    // sendRequest('dev.nft', 'post', {address})
+  }, [walletAddress])
 
   useEffect(() => {
     if (!connectedWallets.length) return
@@ -46,6 +56,8 @@ export default function Mint() {
       'connectedWallets',
       JSON.stringify(connectedWalletsLabelArray)
     )
+    setWalletAddress(wallet?.accounts[0])
+    console.log(walletAddress)
   }, [connectedWallets])
 
   useEffect(() => {
@@ -64,7 +76,8 @@ export default function Mint() {
           }
         })
       }
-
+      
+      // setWalletAddress(setWalletAddress)
       setWalletFromLocalStorage()
     }
   }, [onboard, connect])
@@ -87,8 +100,14 @@ export default function Mint() {
     init()
   }, [])
 
-
+  useEffect(() => {
+    
+  }, [walletAddress])
   
+  const sendRequest = async (url, method, body = {}) => {
+    const result = await axios[method](url, { ...body})
+  }
+
   const publicMintHandler = async () => {
     setIsMinting(true)
 
