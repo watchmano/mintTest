@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Component } from 'react'
 import { initOnboard } from '../utils/onboard'
 import { useConnectWallet, useSetChain, useWallets } from '@web3-onboard/react'
 import { config } from '../dapp.config'
 import createGuest from 'cross-domain-storage/guest'
+import ReactDOM from 'react-dom';
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from 'react-responsive-carousel';
+
 import {
   getTotalMinted,
   getMaxSupply,
@@ -12,9 +16,10 @@ import {
   presaleMint,
   publicMint
 } from '../utils/interact'
-import {axios} from 'axios'
+import axios from 'axios'
 
 export default function Mint() {
+  const [thumbnailArray, setThumbnailArray] = useState(null)
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain()
   const connectedWallets = useWallets()
@@ -34,19 +39,9 @@ export default function Mint() {
   const [nftPrice, setNftPrice] = useState(0)
   const [currency, setCurrency] = useState('eth')
   const [walletAddress, setWalletAddress] = useState('')
+  
 
-
-  useEffect(() => {
-    var bazStorage = createGuest('https://360hexaworld.com');
-    bazStorage.get('logininfo', function(error, value) {
-      console.log(value)
-      // value for the key of 'fizz' will be retrieved from localStorage on www.baz.com
-  });
-    // const { address } = walletAddress
-    // sendRequest('dev.nft', 'post', {address})
-  }, [walletAddress])
-
-  useEffect(() => {
+  useEffect(async () => {
     if (!connectedWallets.length) return
 
     const connectedWalletsLabelArray = connectedWallets.map(
@@ -58,9 +53,19 @@ export default function Mint() {
     )
     setWalletAddress(wallet?.accounts[0])
     console.log(walletAddress)
+
+
+    const imgArray = await loadThumbnails()
+    console.log(imgArray)
+    
+    // setThumbnailArray(imgArray)
+    // console.log('haowiejfiaowe', thumbnailArray)  
+    
+    
+
   }, [connectedWallets])
 
-  useEffect(() => {
+  useEffect(async () => {
     if (!onboard) return
 
     const previouslyConnectedWallets = JSON.parse(
@@ -79,10 +84,13 @@ export default function Mint() {
       
       // setWalletAddress(setWalletAddress)
       setWalletFromLocalStorage()
+      
     }
+
   }, [onboard, connect])
 
-  useEffect(() => {
+
+  useEffect(async () => {
     const init = async () => {
       setMaxSupply(await getMaxSupply())
       setTotalMinted(await getTotalMinted())
@@ -97,17 +105,18 @@ export default function Mint() {
       )
     }
 
-    init()
+    await init()
+
   }, [])
 
-  useEffect(() => {
-    
-  }, [walletAddress])
-  
-  const sendRequest = async (url, method, body = {}) => {
-    const result = await axios[method](url, { ...body})
+  const loadThumbnails = async () => {
+    const result = await axios.get('https://api.360hexaworld.com/v2/page/voxel-object-data/top?order=newest')
+    const { data } = result.data
+    console.log(data)
+    return data
   }
 
+  
   const publicMintHandler = async () => {
     setIsMinting(true)
 
@@ -121,10 +130,18 @@ export default function Mint() {
     setIsMinting(false)
   }
 
+  const thumbnailIter = (thumbnail) => {
+     <div>
+          <img src={thumbnail.thumbnail} />
+          <p className="legend">Legend 2</p>
+      </div>
+    }
+  
   const onPriceChange = (e) => setNftPrice(e.target.value)
-
-
+  
+  
   return (
+    
     // border-[rgba(0,0,0,1)]
     <div className="min-h-screen h-full w-full overflow-hidden flex flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
@@ -176,12 +193,61 @@ export default function Mint() {
               : ''}
           </h3>
 
+                    
           <div className="flex flex-col md:flex-row md:space-x-1 w-5/6 mt-10 md:mt-14">
             <div className="relative w-full md:w-1/2">
-              <img
-                src="/images/13.png"
-                className=" object-cover w-full sm:h-[280px] md:w-[250px] rounded-md"
-              />
+              {(thumbnailArray !== null) && <Carousel>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oEriayVJnXpWc1vOhTJp/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oEri16fOytQTmL4HI2kU/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDPVBxQtSfjwxHtKbIOL/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDOXnd_NMHpamkvCmmdQ/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDMr483bpnh6JjBzS9yj/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDJ52mw04B9ZDRC8wg7I/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDKvtx2MbcXRs5jcsEIZ/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDDUBqfOf3ZwMoQv8FiH/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oD53PFE18YMW9deXZkSl/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oC3uDTURw7oM68Jnf4Fq/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oD5_obcZiLX5YXjAnLNJ/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+                <div>
+                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oC0FqYOI0lrw3yI6IpJt/thumbnail.png" />
+                    <p className="legend">Legend2</p>
+                </div>
+              </Carousel> 
+              // : <div></div>
+              }
             </div>
 
             <div
