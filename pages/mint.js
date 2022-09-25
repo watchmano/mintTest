@@ -196,7 +196,7 @@ export default function Mint() {
                     
           <div className="flex flex-col md:flex-row md:space-x-1 w-5/6 mt-10 md:mt-14">
             <div className="relative w-full md:w-1/2">
-              {(thumbnailArray !== null) && <Carousel>
+              <Carousel>
                 <div>
                     <img src="https://api.360hexaworld.com/v2/asset/file/as_oEriayVJnXpWc1vOhTJp/thumbnail.png" />
                     <p className="legend">Legend2</p>
@@ -246,8 +246,6 @@ export default function Mint() {
                     <p className="legend">Legend2</p>
                 </div>
               </Carousel> 
-              // : <div></div>
-              }
             </div>
 
             <div
