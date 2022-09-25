@@ -19,7 +19,7 @@ import {
 import axios from 'axios'
 
 export default function Mint() {
-  const [thumbnailArray, setThumbnailArray] = useState(null)
+  const [thumbnailArray, setThumbnailArray] = useState([])
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain()
   const connectedWallets = useWallets()
@@ -55,11 +55,7 @@ export default function Mint() {
     console.log(walletAddress)
 
 
-    const imgArray = await loadThumbnails()
-    console.log(imgArray)
     
-    // setThumbnailArray(imgArray)
-    // console.log('haowiejfiaowe', thumbnailArray)  
     
     
 
@@ -89,7 +85,7 @@ export default function Mint() {
 
   }, [onboard, connect])
 
-
+  const tempArray = []
   useEffect(async () => {
     const init = async () => {
       setMaxSupply(await getMaxSupply())
@@ -106,9 +102,28 @@ export default function Mint() {
     }
 
     await init()
+    let counter = 1
+    
+    
+    const loadThumbnail = async () => {
+      if(counter == 11) {
+        console.log(10, tempArray)
+        setThumbnailArray(tempArray)
+        return
+      }
+      const result = await axios.get(`https://api.360hexaworld.com/v2/nft-metadata/${counter}.json`)
+      console.log(result)
+      const {image, name} = result.data
+      tempArray.push({image, name})
+      // setThumbnailArray([...thumbnailArray, {name, image}])
+      counter++
+      loadThumbnail()
+    }
 
+
+    loadThumbnail()
   }, [])
-
+  
   const loadThumbnails = async () => {
     const result = await axios.get('https://api.360hexaworld.com/v2/page/voxel-object-data/top?order=newest')
     const { data } = result.data
@@ -197,54 +212,13 @@ export default function Mint() {
           <div className="flex flex-col md:flex-row md:space-x-1 w-5/6 mt-10 md:mt-14">
             <div className="relative w-full md:w-1/2">
               <Carousel>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oEriayVJnXpWc1vOhTJp/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oEri16fOytQTmL4HI2kU/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDPVBxQtSfjwxHtKbIOL/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDOXnd_NMHpamkvCmmdQ/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDMr483bpnh6JjBzS9yj/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDJ52mw04B9ZDRC8wg7I/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDKvtx2MbcXRs5jcsEIZ/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oDDUBqfOf3ZwMoQv8FiH/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oD53PFE18YMW9deXZkSl/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oC3uDTURw7oM68Jnf4Fq/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oD5_obcZiLX5YXjAnLNJ/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
-                <div>
-                    <img src="https://api.360hexaworld.com/v2/asset/file/as_oC0FqYOI0lrw3yI6IpJt/thumbnail.png" />
-                    <p className="legend">Legend2</p>
-                </div>
+                {thumbnailArray.length == 10 && thumbnailArray.map((thumbnail) => {
+                  return <div>
+                            <img src={thumbnail.image} />
+                            <p className="legend">{thumbnail.name}</p>
+                        </div>
+                })}
+                
               </Carousel> 
             </div>
 
