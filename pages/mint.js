@@ -226,10 +226,10 @@ export default function Mint() {
 
             <div
               className="flex flex-col items-start w-full md:w-1/2 mt-5 md:mt-0"
-              style= {{
-                borderColor: '#f49289',
-                borderWidth: '3px'
-              }}
+              // style= {{
+              //   borderColor: '#f49289',
+              //   borderWidth: '3px'
+              // }}
             >
               
               {/* NFT price input */}
@@ -242,6 +242,7 @@ export default function Mint() {
                   <div className="mt-1 flex rounded-md">
                     <input
                       type="number"
+                      disabled="true"
                       value={nftPrice} onChange={onPriceChange} name="price-input"
                       id=""
                       className="text-gray-500 border-b block w-full flex-1 rounded-l-md sm:text-sm"
