@@ -24,6 +24,11 @@ export const getMaxSupply = async () => {
   return maxSupply
 }
 
+export const getTotalSupply = async () => {
+  const totalSupply = await nftContract.methods.totalSupply().call()
+  return totalSupply
+}
+
 export const isPausedState = async () => {
   const paused = await nftContract.methods.paused().call()
   return paused

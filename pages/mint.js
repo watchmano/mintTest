@@ -14,7 +14,8 @@ import {
   isPublicSaleState,
   isPreSaleState,
   presaleMint,
-  publicMint
+  publicMint,
+  getTotalSupply
 } from '../utils/interact'
 import axios from 'axios'
 
@@ -102,20 +103,22 @@ export default function Mint() {
     }
 
     await init()
-    let counter = 1
     
-    
+    let counter = 1;
+    const tempArray = []
     const loadThumbnail = async () => {
-      if(counter == 11) {
-        console.log(10, tempArray)
+      if (counter == 11) {
+
         setThumbnailArray(tempArray)
+        console.log(thumbnailArray, 'ajiweofjiao;wefjo;')
         return
       }
+      const totalSupply = await getTotalSupply()
+      console.log('aewfawef', totalSupply)
       const result = await axios.get(`https://api.360hexaworld.com/v2/nft-metadata/${counter}.json`)
       console.log(result)
       const {image, name} = result.data
       tempArray.push({image, name})
-      // setThumbnailArray([...thumbnailArray, {name, image}])
       counter++
       loadThumbnail()
     }
@@ -124,13 +127,14 @@ export default function Mint() {
     loadThumbnail()
   }, [])
   
-  const loadThumbnails = async () => {
-    const result = await axios.get('https://api.360hexaworld.com/v2/page/voxel-object-data/top?order=newest')
-    const { data } = result.data
-    console.log(data)
-    return data
+ 
+  const incrementMintAmount = () => {
+      setMintAmount(mintAmount + 1)
   }
 
+  const decrementMintAmount = () => {
+      setMintAmount(mintAmount - 1)
+  }
   
   const publicMintHandler = async () => {
     setIsMinting(true)
@@ -145,13 +149,7 @@ export default function Mint() {
     setIsMinting(false)
   }
 
-  const thumbnailIter = (thumbnail) => {
-     <div>
-          <img src={thumbnail.thumbnail} />
-          <p className="legend">Legend 2</p>
-      </div>
-    }
-  
+
   const onPriceChange = (e) => setNftPrice(e.target.value)
   
   
@@ -211,13 +209,17 @@ export default function Mint() {
                     
           <div className="flex flex-col md:flex-row md:space-x-1 w-5/6 mt-10 md:mt-14">
             <div className="relative w-full md:w-1/2">
-              <Carousel>
-                {thumbnailArray.length == 10 && thumbnailArray.map((thumbnail) => {
+              <Carousel onChange={(index) => {
+                setMintAmount(index + 1)
+                console.log(mintAmount)
+              }}>
+                {thumbnailArray && thumbnailArray.map((thumbnail) => {
                   return <div>
                             <img src={thumbnail.image} />
                             <p className="legend">{thumbnail.name}</p>
                         </div>
-                })}
+                })
+                }
                 
               </Carousel> 
             </div>
