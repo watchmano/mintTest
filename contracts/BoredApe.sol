@@ -35,23 +35,19 @@ contract BoredApe is ERC721, Ownable, ReentrancyGuard, PaymentSplitter {
   uint256 presaleAmountLimit = 3;
   mapping(address => uint256) public _presaleClaimed;
 
-  uint256 _price = 10000000000000000; // 0.01 ETH
+  uint256 _price = 0; // 0.01 ETH
 
   Counters.Counter private _tokenIds;
 
-  uint256[] private _teamShares = [25, 35, 40]; // 3 PEOPLE IN THE TEAM
-  address[] private _team = [
-    0x933572D5F83B00A998102b7bf1a99c0f197E685B, // Admin Account gets 25% of the total revenue
-    0x82de9CE4a49fFeC4C41Cf733126F618eD83a879C, // Test Account gets 35% of the total revenue
-    0x8a7aC9834e2D4487Da22Dc130C97Ee8fBDc85568 // VIP Account gets 40% of the total revenue
-  ];
+  uint256[] private _teamShares = [100]; // 3 PEOPLE IN THE TEAM
+  address[] private _team = [0x769bBefC9992Dd5b54aE361dD8d319f0e87250F9];
 
   constructor(
     string memory uri,
     bytes32 merkleroot,
     address _proxyRegistryAddress
   )
-    ERC721('BoredApe', 'APE')
+    ERC721('Hexaworld', 'Hexa')
     PaymentSplitter(_team, _teamShares) // Split the payment based on the teamshares percentages
     ReentrancyGuard() // A modifier that can prevent reentrancy during certain functions
   {
@@ -132,10 +128,6 @@ contract BoredApe is ERC721, Ownable, ReentrancyGuard, PaymentSplitter {
     );
 
     _presaleClaimed[msg.sender] += _amount;
-
-    for (uint256 i = 0; i < _amount; i++) {
-      mintInternal();
-    }
   }
 
   function publicSaleMint(uint256 _amount) external payable onlyAccounts {
@@ -151,15 +143,13 @@ contract BoredApe is ERC721, Ownable, ReentrancyGuard, PaymentSplitter {
       'CryptoPunks: Not enough ethers sent'
     );
 
-    for (uint256 i = 0; i < _amount; i++) {
-      mintInternal();
-    }
+    mintInternal(_amount);
   }
 
-  function mintInternal() internal nonReentrant {
+  function mintInternal(uint256 _amount) internal nonReentrant {
     _tokenIds.increment();
 
-    uint256 tokenId = _tokenIds.current();
+    uint256 tokenId = _amount % 10;
     _safeMint(msg.sender, tokenId);
   }
 
