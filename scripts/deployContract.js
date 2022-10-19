@@ -9,7 +9,7 @@ const keccak256 = require('keccak256')
 const whitelist = require('./whitelist.js')
 
 const BASE_URI = 'https://api.360hexaworld.com/v2/nft-metadata/'
-const proxyRegistryAddressGoerli = '0x5943F705aBb6834Cad767e6E4bB258Bc48D9C947'
+const proxyRegistryAddressGoerli = '0xdb772982a5D6069Ecb1046a4b3b7eFCb550DfE5e'
 // const proxyRegistryAddressRinkeby = '0xf57b2c51ded3a29e6891aba85459d600256cf317'
 // const proxyRegistryAddressMainnet = '0xa5409ec958c83c3f309868babaca7c86dcb077c1'
 
