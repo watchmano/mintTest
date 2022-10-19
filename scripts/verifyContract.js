@@ -23,7 +23,7 @@
    
  
    await hre.run('verify:verify', {
-     address: '0x488467f0acB804E2A9b7DE3533925A7C99B46ee6', // Deployed contract address
+     address: '0x187cf3Db972468bb71f832f6100aC4854a49535a', // Deployed contract address
      constructorArguments: [BASE_URI, root, proxyRegistryAddressGoerli]
    })
    console.log('hello')
