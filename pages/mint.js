@@ -53,7 +53,7 @@ export default function Mint() {
       JSON.stringify(connectedWalletsLabelArray)
     )
     setWalletAddress(wallet?.accounts[0])
-    console.log(walletAddress)
+    
 
 
     
@@ -110,13 +110,11 @@ export default function Mint() {
       if (counter == 11) {
 
         setThumbnailArray(tempArray)
-        console.log(thumbnailArray, 'ajiweofjiao;wefjo;')
         return
       }
       const totalSupply = await getTotalSupply()
-      console.log('aewfawef', totalSupply)
       const result = await axios.get(`https://api.360hexaworld.com/v2/nft-metadata/${counter}.json`)
-      console.log(result)
+      
       const {image, name} = result.data
       tempArray.push({image, name})
       counter++

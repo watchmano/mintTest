@@ -73,13 +73,6 @@ contract BoredApe is ERC721, Ownable, ReentrancyGuard, PaymentSplitter {
     root = merkleroot;
   }
 
-  function random() private view returns (uint256) {
-    return
-      uint256(
-        keccak256(abi.encodePacked(block.difficulty, block.timestamp, '1'))
-      );
-  }
-
   modifier onlyAccounts() {
     require(msg.sender == tx.origin, 'Not allowed origin');
     _;
@@ -109,23 +102,54 @@ contract BoredApe is ERC721, Ownable, ReentrancyGuard, PaymentSplitter {
     publicM = !publicM;
   }
 
-  function publicSaleMint(uint256 _amount) external payable onlyAccounts {
-    require(publicM, 'Hexaworld: PublicSale is OFF');
-    require(!paused, 'Hexaworld: Contract is paused');
-    require(_amount > 0, 'Hexaworld: zero amount');
+  function presaleMint(
+    address account,
+    uint256 _amount,
+    bytes32[] calldata _proof
+  ) external payable isValidMerkleProof(_proof) onlyAccounts {
+    require(msg.sender == account, 'CryptoPunks: Not allowed');
+    require(presaleM, 'CryptoPunks: Presale is OFF');
+    require(!paused, 'CryptoPunks: Contract is paused');
+    require(
+      _amount <= presaleAmountLimit,
+      "CryptoPunks: You can't mint so much tokens"
+    );
+    require(
+      _presaleClaimed[msg.sender] + _amount <= presaleAmountLimit,
+      "CryptoPunks: You can't mint so much tokens"
+    );
 
     uint256 current = _tokenIds.current();
 
-    // require(current + _amount <= maxSupply, 'Hexaworld: Max supply exceeded');
-    require(_price * _amount <= msg.value, 'Hexaworld: Not enough ethers sent');
+    require(current + _amount <= maxSupply, 'CryptoPunks: max supply exceeded');
+    require(
+      _price * _amount <= msg.value,
+      'CryptoPunks: Not enough ethers sent'
+    );
+
+    _presaleClaimed[msg.sender] += _amount;
+  }
+
+  function publicSaleMint(uint256 _amount) external payable onlyAccounts {
+    require(publicM, 'CryptoPunks: PublicSale is OFF');
+    require(!paused, 'CryptoPunks: Contract is paused');
+    require(_amount > 0, 'CryptoPunks: zero amount');
+
+    uint256 current = _tokenIds.current();
+
+    require(current + _amount <= maxSupply, 'CryptoPunks: Max supply exceeded');
+    require(
+      _price * _amount <= msg.value,
+      'CryptoPunks: Not enough ethers sent'
+    );
 
     mintInternal(_amount);
   }
 
   function mintInternal(uint256 _amount) internal nonReentrant {
     _tokenIds.increment();
-    uint256 tokenId = random();
-    // uint256 tokenId = _amount % 10;
+
+    uint256 tokenId = _amount % 10;
     _safeMint(msg.sender, tokenId);
   }
 
