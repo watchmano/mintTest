@@ -19,7 +19,15 @@ import {
 } from '../utils/interact'
 import axios from 'axios'
 
-export default function Mint() {
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      query: 'user_id'
+    }, // will be passed to the page component as props
+  }
+}
+
+export default function Mint({query}) {
   const [thumbnailArray, setThumbnailArray] = useState([])
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain()
@@ -40,7 +48,7 @@ export default function Mint() {
   const [nftPrice, setNftPrice] = useState(0)
   const [currency, setCurrency] = useState('eth')
   const [walletAddress, setWalletAddress] = useState('')
-  
+  const [user_id, setUser_Id] = useState('')
   const router = useRouter()
   
   
@@ -90,6 +98,8 @@ export default function Mint() {
 
   const tempArray = []
   useEffect(async () => {
+    setUser_Id(query)
+    const { user_id } = router.query
     const init = async () => {
       setMaxSupply(await getMaxSupply())
       setTotalMinted(await getTotalMinted())
@@ -102,12 +112,12 @@ export default function Mint() {
       setMaxMintAmount(
         isPreSale ? config.presaleMaxMintAmount : config.maxMintAmount
       )
+      
     }
 
     await init()
-    
-    let counter = 1;
     const tempArray = []
+      
     const loadThumbnail = async (user_id) => {
       console.log(user_id)
       // const totalSupply = await getTotalSupply()
@@ -123,8 +133,13 @@ export default function Mint() {
       console.log('thumbnailArray', thumbnailArray)
       
     }
-    const { user_id } = router.query
+
+    
+  
     loadThumbnail(user_id)
+    
+    
+ 
     
   }, [])
   
