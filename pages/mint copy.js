@@ -108,24 +108,26 @@ export default function Mint() {
     
     let counter = 1;
     const tempArray = []
-    const loadThumbnail = async (user_id) => {
-      console.log(user_id)
-      // const totalSupply = await getTotalSupply()
-      const result = await axios.get(`https://api.360hexaworld.com/v2/user/${user_id}/voxel-object-data/published-status`)
-      const voxelObjects = result.data
-      console.log(voxelObjects)
-      voxelObjects.map((voxelObject) => {
-        const { voxelObjectDatumId } = voxelObject;
-        const voxelThumbnailImage = `https://api.360hexaworld.com/v2/voxel-object-datum/${voxelObjectDatumId}/thumbnail`
-        tempArray.push(voxelThumbnailImage)
-      })
-      setThumbnailArray(tempArray)
-      console.log('thumbnailArray', thumbnailArray)
+    const loadThumbnail = async () => {
+      if (counter == 11) {
+
+        setThumbnailArray(tempArray)
+        return
+      }
+      const totalSupply = await getTotalSupply()
+      const result = await axios.get(`https://api.360hexaworld.com/v2/nft-metadata/${counter}.json`)
       
+      const {image, name} = result.data
+      tempArray.push({image, name})
+      counter++
+      loadThumbnail()
     }
-    const { user_id } = router.query
-    loadThumbnail(user_id)
-    
+
+
+    loadThumbnail()
+    const { usr } = router.query
+    const result = await axios.get(`https://api.360hexaworld.com/v2/user/${usr}/voxel-object-data/published-status`)
+    console.log(result)
   }, [])
   
  
@@ -216,8 +218,8 @@ export default function Mint() {
               }}>
                 {thumbnailArray && thumbnailArray.map((thumbnail) => {
                   return <div>
-                            <img src={thumbnail} />
-                            {/* <p className="legend">{thumbnail.name}</p> */}
+                            <img src={thumbnail.image} />
+                            <p className="legend">{thumbnail.name}</p>
                         </div>
                 })
                 }
