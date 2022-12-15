@@ -20,7 +20,7 @@ contract BoredApe is ERC721, Ownable, ReentrancyGuard, PaymentSplitter {
 
   address proxyRegistryAddress;
 
-  uint256 public maxSupply = 100;
+  uint256 public maxSupply = 50000;
 
   string public baseURI;
   string public notRevealedUri =

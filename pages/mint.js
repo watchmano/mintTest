@@ -3,9 +3,9 @@ import { initOnboard } from '../utils/onboard'
 import { useConnectWallet, useSetChain, useWallets } from '@web3-onboard/react'
 import { config } from '../dapp.config'
 import createGuest from 'cross-domain-storage/guest'
-import ReactDOM from 'react-dom';
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
-import { Carousel } from 'react-responsive-carousel';
+import ReactDOM from 'react-dom'
+import 'react-responsive-carousel/lib/styles/carousel.min.css' // requires a loader
+import { Carousel } from 'react-responsive-carousel'
 import { useRouter } from 'next/router'
 import {
   getTotalMinted,
@@ -23,11 +23,11 @@ export async function getServerSideProps(context) {
   return {
     props: {
       query: 'user_id'
-    }, // will be passed to the page component as props
+    } // will be passed to the page component as props
   }
 }
 
-export default function Mint({query}) {
+export default function Mint({ query }) {
   const [thumbnailArray, setThumbnailArray] = useState([])
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain()
@@ -50,8 +50,7 @@ export default function Mint({query}) {
   const [walletAddress, setWalletAddress] = useState('')
   const [user_id, setUser_Id] = useState('')
   const router = useRouter()
-  
-  
+
   useEffect(async () => {
     if (!connectedWallets.length) return
 
@@ -63,13 +62,6 @@ export default function Mint({query}) {
       JSON.stringify(connectedWalletsLabelArray)
     )
     setWalletAddress(wallet?.accounts[0])
-    
-
-
-    
-    
-    
-
   }, [connectedWallets])
 
   useEffect(async () => {
@@ -88,18 +80,16 @@ export default function Mint({query}) {
           }
         })
       }
-      
+
       // setWalletAddress(setWalletAddress)
       setWalletFromLocalStorage()
-      
     }
-
   }, [onboard, connect])
 
   const tempArray = []
   useEffect(async () => {
     setUser_Id(query)
-    const { user_id } = router.query
+    const { user_id, tkn } = router.query
     const init = async () => {
       setMaxSupply(await getMaxSupply())
       setTotalMinted(await getTotalMinted())
@@ -112,50 +102,45 @@ export default function Mint({query}) {
       setMaxMintAmount(
         isPreSale ? config.presaleMaxMintAmount : config.maxMintAmount
       )
-      
     }
 
+    const config = {
+      headers: {
+        Authorization: tkn
+      }
+    }
+    const result = await axios.get(
+      `https://api.360hexaworld.com/v2/page/user/my-voxel-object-data/paginate?status=all&search=&sort=&page=1&limit=200`,
+      config
+    )
     await init()
     const tempArray = []
-      
-    const loadThumbnail = async (user_id) => {
-      console.log(user_id)
-      // const totalSupply = await getTotalSupply()
-      const result = await axios.get(`https://api.360hexaworld.com/v2/user/${user_id}/voxel-object-data/published-status`)
-      const voxelObjects = result.data
-      console.log(voxelObjects)
+
+    const loadThumbnail = async () => {
+      const voxelObjects = result.data.data
       voxelObjects.map((voxelObject) => {
-        const { voxelObjectDatumId } = voxelObject;
-        const voxelThumbnailImage = `https://api.360hexaworld.com/v2/voxel-object-datum/${voxelObjectDatumId}/thumbnail`
+        const { _id } = voxelObject
+        const voxelThumbnailImage = `https://api.360hexaworld.com/v2/voxel-object-datum/${_id}/thumbnail`
         tempArray.push(voxelThumbnailImage)
       })
       setThumbnailArray(tempArray)
-      console.log('thumbnailArray', thumbnailArray)
-      
     }
 
-    
-  
     loadThumbnail(user_id)
-    
-    
- 
-    
   }, [])
-  
- 
+
   const incrementMintAmount = () => {
-      setMintAmount(mintAmount + 1)
+    setMintAmount(mintAmount + 1)
   }
 
   const decrementMintAmount = () => {
-      setMintAmount(mintAmount - 1)
+    setMintAmount(mintAmount - 1)
   }
-  
+
   const publicMintHandler = async () => {
     setIsMinting(true)
 
-    const { success, status } = await publicMint(mintAmount)
+    const { success, status } = await publicMint(1)
 
     setStatus({
       success,
@@ -165,23 +150,19 @@ export default function Mint({query}) {
     setIsMinting(false)
   }
 
-
   const onPriceChange = (e) => setNftPrice(e.target.value)
-  
-  
+
   return (
-    
     // border-[rgba(0,0,0,1)]
     <div className="min-h-screen h-full w-full overflow-hidden flex flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
         <div
-          style= {{
+          style={{
             borderColor: '#f49289',
             borderWidth: '3px'
           }}
           className="border border-primary relative z-1 md:max-w-3xl w-full bg-white filter backdrop-blur-sm py-4 rounded-lg px-2 flex flex-col items-center"
         >
-          
           {wallet && (
             <button
               style={{
@@ -216,28 +197,31 @@ export default function Mint({query}) {
           </h1>
           <h3 className="text-sm text-gray-500 tracking-widest">
             {wallet?.accounts[0]?.address
-              ? 'Wallet Address : ' + wallet?.accounts[0]?.address.slice(0, 8) +
+              ? 'Wallet Address : ' +
+                wallet?.accounts[0]?.address.slice(0, 8) +
                 '...' +
                 wallet?.accounts[0]?.address.slice(-4)
               : ''}
           </h3>
 
-                    
           <div className="flex flex-col md:flex-row md:space-x-1 w-5/6 mt-10 md:mt-14">
             <div className="relative w-full md:w-1/2">
-              <Carousel onChange={(index) => {
-                setMintAmount(index + 1)
-                console.log(mintAmount)
-              }}>
-                {thumbnailArray && thumbnailArray.map((thumbnail) => {
-                  return <div>
-                            <img src={thumbnail} />
-                            {/* <p className="legend">{thumbnail.name}</p> */}
-                        </div>
-                })
-                }
-                
-              </Carousel> 
+              <Carousel
+                onChange={(index) => {
+                  setMintAmount(index + 1)
+                  console.log(mintAmount)
+                }}
+              >
+                {thumbnailArray &&
+                  thumbnailArray.map((thumbnail) => {
+                    return (
+                      <div>
+                        <img src={thumbnail} />
+                        {/* <p className="legend">{thumbnail.name}</p> */}
+                      </div>
+                    )
+                  })}
+              </Carousel>
             </div>
 
             <div
@@ -247,43 +231,46 @@ export default function Mint({query}) {
               //   borderWidth: '3px'
               // }}
             >
-              
               {/* NFT price input */}
               <div className="py-1 w-full">
                 <div className="w-full text-xl  flex flex-col items-start justify-between text-brand-yellow">
                   <div className="flex">
-                    <label htmlFor="price-input" className="block text-md font-medium text-gray-700">Price</label>
+                    <label
+                      htmlFor="price-input"
+                      className="block text-md font-medium text-gray-700"
+                    >
+                      Price
+                    </label>
                   </div>
-                  
+
                   <div className="mt-1 flex rounded-md">
                     <input
                       type="number"
                       disabled="true"
-                      value={nftPrice} onChange={onPriceChange} name="price-input"
+                      value={nftPrice}
+                      onChange={onPriceChange}
+                      name="price-input"
                       id=""
                       className="text-gray-500 border-b block w-full flex-1 rounded-l-md sm:text-sm"
                       placeholder=""
                     />
-                    <select id="currency" name="currency" class="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <select
+                      id="currency"
+                      name="currency"
+                      class="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    >
                       <option>ETH</option>
                     </select>
                   </div>
                 </div>
               </div>
-              
-              
+
               <div className="text-gray-500 border-b py-2 mt-10 w-full">
                 <div className="w-full text-xl  flex items-center justify-start text-brand-yellow">
                   <p className="text-gray-500 mr-5">Total</p>
-                  <p className="text-gray-500 mr-2">
-                    {nftPrice}
-                  </p>
-                  <p className="text-gray-500 mr-2">
-                    {currency.toUpperCase()}
-                  </p>
-                  <p className="text-gray-500">
-                    + GAS
-                  </p>
+                  <p className="text-gray-500 mr-2">{nftPrice}</p>
+                  <p className="text-gray-500 mr-2">{currency.toUpperCase()}</p>
+                  <p className="text-gray-500">+ GAS</p>
                 </div>
               </div>
 
@@ -291,12 +278,8 @@ export default function Mint({query}) {
               {wallet ? (
                 <button
                   className={` ${
-                    paused || isMinting
-                      ? 'cursor-not-allowed'
-                      : ''
-                    }  mt-12 px-6 py-3 rounded-md text-xl text-white  mx-auto tracking-wide uppercase`
-                    
-                  }
+                    paused || isMinting ? 'cursor-not-allowed' : ''
+                  }  mt-12 px-6 py-3 rounded-md text-xl text-white  mx-auto tracking-wide uppercase`}
                   disabled={paused || isMinting}
                   onClick={publicMintHandler}
                   style={{
