@@ -100,7 +100,7 @@ export const presaleMint = async (mintAmount) => {
         <a href={`https://goerli.etherscan.io/tx/${txHash}`} target="_blank">
           <p>✅ Check out your transaction on Etherscan:</p>
           <p>{`https://goerli.etherscan.io/tx/${txHash}`}</p>
-        </a>  
+        </a>
       )
     }
   } catch (error) {
@@ -112,7 +112,6 @@ export const presaleMint = async (mintAmount) => {
 }
 
 export const publicMint = async (mintAmount) => {
-  
   if (!window.ethereum.selectedAddress) {
     return {
       success: false,
@@ -142,14 +141,13 @@ export const publicMint = async (mintAmount) => {
       params: [tx]
     })
 
-    // setTimeout(async () => {
-    //   const data = await web3.eth.getTransactionReceipt(txHash)
-    //   console.log('data', data)
-    //   let logs = data.logs;
-    //   console.log(logs);
-    //   console.log(web3.utils.hexToNumber(logs[0].topics[3]));
-    // }, 50000)
-    
+    setTimeout(async () => {
+      const data = await web3.eth.getTransactionReceipt(txHash)
+      console.log('data', data)
+      let logs = data.logs
+      console.log(logs)
+      console.log(web3.utils.hexToNumber(logs[0].topics[3]))
+    }, 50000)
 
     return {
       success: true,

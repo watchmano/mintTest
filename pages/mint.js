@@ -62,6 +62,7 @@ export default function Mint({ query }) {
       JSON.stringify(connectedWalletsLabelArray)
     )
     setWalletAddress(wallet?.accounts[0])
+    console.log(walletAddress)
   }, [connectedWallets])
 
   useEffect(async () => {
@@ -90,6 +91,7 @@ export default function Mint({ query }) {
   useEffect(async () => {
     setUser_Id(query)
     const { user_id, tkn } = router.query
+    console.log(user_id, tkn)
     const init = async () => {
       setMaxSupply(await getMaxSupply())
       setTotalMinted(await getTotalMinted())
@@ -111,6 +113,7 @@ export default function Mint({ query }) {
     }
     const result = await axios.get(
       `https://api.360hexaworld.com/v2/page/user/my-voxel-object-data/paginate?status=all&search=&sort=&page=1&limit=200`,
+      // `https://api.360hexaworld.local/v2/page/user/my-voxel-object-data/paginate?status=all&search=&sort=&page=1&limit=200`,
       config
     )
     await init()
@@ -209,7 +212,7 @@ export default function Mint({ query }) {
               <Carousel
                 onChange={(index) => {
                   setMintAmount(index + 1)
-                  console.log(mintAmount)
+                  // console.log(mintAmount)
                 }}
               >
                 {thumbnailArray &&
